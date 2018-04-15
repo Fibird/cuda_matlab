@@ -16,4 +16,6 @@ build
 ### executable files ###
 bin/
 
+### library files ###
+lib/
 # End of https://www.gitignore.io/api/cmake
