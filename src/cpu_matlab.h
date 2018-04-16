@@ -75,5 +75,6 @@ void mul(const SparseMatrix a, const Matrix b, SparseMatrix c);
 void mul(const SparseMatrix a, const Matrix b, Matrix c);
 void mul(const SparseMatrix a, const double b, SparseMatrix c);
 void transpose(const SparseMatrix a, SparseMatrix b);
+void fastTranspose(const SparseMatrix a, SparseMatrix b);
 void Spa2Nor(const SparseMatrix a, Matrix b);
 void Nor2Spa(const Matrix a, SparseMatrix b);
