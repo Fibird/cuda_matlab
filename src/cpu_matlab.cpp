@@ -9,13 +9,15 @@ using std::endl;
 /*------------- Normal Matrix --------------*/
 void add(const Matrix a, const Matrix b, Matrix c)
 {
-    int n = a.rows * a.cols;
-    if (!c.data)
+    if (a.rows != b.rows || a.cols != b.cols)
     {
-        c.rows = a.rows;
-        c.cols = c.cols;
-        c.data = new double[c.rows * c.cols];
+        cout << "Incompatible matrices!" << endl;
+        exit(EXIT_FAILURE);
     }
+    int n = a.rows * a.cols;
+    c.rows = a.rows;
+    c.cols = c.cols;
+    c.data = new double[c.rows * c.cols];
     for (int i = 0; i < n; ++i)
     {
         c.data[i] = a.data[i] + b.data[i];
@@ -24,13 +26,15 @@ void add(const Matrix a, const Matrix b, Matrix c)
 
 void sub(const Matrix a, const Matrix b, Matrix c)
 {
-    int n = a.rows * a.cols;
-    if (!c.data)
+    if (a.rows != b.rows || a.cols != b.cols)
     {
-        c.rows = a.rows;
-        c.cols = a.cols;
-        c.data = new double[c.rows * c.cols];
+        cout << "Incompatible matrices!" << endl;
+        exit(EXIT_FAILURE);
     }
+    int n = a.rows * a.cols;
+    c.rows = a.rows;
+    c.cols = a.cols;
+    c.data = new double[c.rows * c.cols];
 
     for (int i = 0; i < n; ++i)
     {
@@ -42,15 +46,14 @@ void mul(const Matrix a, const Matrix b, Matrix c)
 {
     if (a.cols != b.rows)
     {
-        cout << "Matrices inner dimension is not identical!" << endl;
+        cout << "Incompatible matrices!" << endl;
         exit(EXIT_FAILURE);
     }
-    if (!c.data)
-    {
-        c.rows = a.rows;
-        c.cols = b.cols;
-        c.data = new double[c.rows * c.cols];
-    }
+
+    c.rows = a.rows;
+    c.cols = b.cols;
+    c.data = new double[c.rows * c.cols];
+
     for (int i = 0; i < a.rows; ++i)
     {
         double temp = 0.0f;
@@ -67,12 +70,10 @@ void mul(const Matrix a, const Matrix b, Matrix c)
 
 void mul(const Matrix a, const double b, Matrix c)
 {
-    if (!c.data)
-    {
-        c.rows = a.rows;
-        c.cols = a.cols;
-        c.data = new double[c.rows * c.cols];
-    }
+    c.rows = a.rows;
+    c.cols = a.cols;
+    c.data = new double[c.rows * c.cols];
+    
     int n = a.rows * a.cols;
     for (int i = 0; i < n; ++i)
     {
@@ -82,12 +83,10 @@ void mul(const Matrix a, const double b, Matrix c)
 
 void transpose(const Matrix a, Matrix b)
 {
-    if (!b.data)
-    {
-        b.rows = a.cols;
-        b.cols = a.rows;
-        b.data = new double[b.rows * b.cols];
-    }
+    b.rows = a.cols;
+    b.cols = a.rows;
+    b.data = new double[b.rows * b.cols];
+    
     for (int i = 0; i < a.rows; ++i)
     {
         for (int j = 0; j < a.cols; ++j)
@@ -100,6 +99,12 @@ void transpose(const Matrix a, Matrix b)
 /*------------- Special Matrix --------------*/
 void add(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
 {
+    if (a.rows != b.rows || a.cols != b.cols)
+    {
+        cout << "Incompatible matrices!" << endl;
+        exit(EXIT_FAILURE);
+    }
+
     c.rows = a.rows;    c.cols = a.cols;
     // using a' term for the moment
     c.terms = a.terms;
@@ -160,6 +165,12 @@ void add(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
 
 void sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
 {
+    if (a.rows != b.rows || a.cols != b.cols)
+    {
+        cout << "Incompatible matrices!" << endl;
+        exit(EXIT_FAILURE);
+    }
+
     SparseMatrix d;
     mul(b, -1.0f, d);
     add(a, d, c);
@@ -167,6 +178,12 @@ void sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
 
 void sub(const SparseMatrix a, const Matrix b, Matrix c)
 {
+    if (a.rows != b.rows || a.cols != b.cols)
+    {
+        cout << "Incompatible matrices!" << endl;
+        exit(EXIT_FAILURE);
+    }
+
     SparseMatrix new_b;
     Nor2Spa(b, new_b);        
     SparseMatrix temp_c;
@@ -176,6 +193,12 @@ void sub(const SparseMatrix a, const Matrix b, Matrix c)
 
 void mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
 {
+    if (a.cols != b.rows)
+    {
+        cout << "Incompatible matrices!" << endl;
+        exit(EXIT_FAILURE);
+    }
+
     c.rows = a.rows;    c.cols = b.cols;
     // using a' term for the time
     c.terms = a.terms;
@@ -183,12 +206,6 @@ void mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
     for (unsigned i = 0; i < c.terms; ++i)
         c.table[i].value = 0.0f;
 
-    if (a.cols != b.rows)
-    {
-        cout << "Matrices inner dimension is not identical!" << endl;
-        exit(EXIT_FAILURE);
-    }
-    
     unsigned *nonzeros = new unsigned[b.rows];
     unsigned *term_starts = new unsigned[b.rows + 1];
 
@@ -258,6 +275,12 @@ void mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
 
 void mul(const SparseMatrix a, const Matrix b, SparseMatrix c)
 {
+    if (a.cols != b.rows)
+    {
+        cout << "Incompatible matrices!" << endl;
+        exit(EXIT_FAILURE);
+    }
+
     SparseMatrix new_b;
     Nor2Spa(b, new_b);
     mul(a, new_b, c);
@@ -265,6 +288,12 @@ void mul(const SparseMatrix a, const Matrix b, SparseMatrix c)
 
 void mul(const SparseMatrix a, const Matrix b, Matrix c)
 {
+    if (a.cols != b.rows)
+    {
+        cout << "Incompatible matrices!" << endl;
+        exit(EXIT_FAILURE);
+    }
+
     SparseMatrix new_b;
     Nor2Spa(b, new_b);
     SparseMatrix temp_c;
