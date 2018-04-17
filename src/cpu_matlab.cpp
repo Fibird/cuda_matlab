@@ -48,13 +48,11 @@ bool mul(const Matrix a, const Matrix b, Matrix &c)
 
     for (int i = 0; i < a.rows; ++i)
     {
-        double temp = 0.0f;
         for (int j = 0; j < b.cols; ++j)
         {
+            double temp = 0.0f;
             for (int t = 0; t < a.cols; ++t)
-            {
                 temp += a.data[i * a.cols + t] * b.data[t * b.cols + j];
-            }
             c.data[i * c.cols + j] = temp;
         }
     }
