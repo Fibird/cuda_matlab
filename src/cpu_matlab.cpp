@@ -7,49 +7,41 @@ using std::cout;
 using std::endl;
 
 /*------------- Normal Matrix --------------*/
-void add(const Matrix a, const Matrix b, Matrix c)
+bool add(const Matrix a, const Matrix b, Matrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
+    if (a.rows != b.rows || a.cols != b.cols
+        || !a.data || !b.data)
+        return false;
     int n = a.rows * a.cols;
-    c.rows = a.rows;
-    c.cols = c.cols;
+    c.rows = a.rows;    c.cols = a.cols;
     c.data = new double[c.rows * c.cols];
     for (int i = 0; i < n; ++i)
     {
         c.data[i] = a.data[i] + b.data[i];
     }
+    return true;
 }
 
-void sub(const Matrix a, const Matrix b, Matrix c)
+bool sub(const Matrix a, const Matrix b, Matrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
+    if (a.rows != b.rows || a.cols != b.cols
+        || !a.data || !b.data)   
+        return false;
     int n = a.rows * a.cols;
-    c.rows = a.rows;
-    c.cols = a.cols;
+    c.rows = a.rows;    c.cols = a.cols;
     c.data = new double[c.rows * c.cols];
 
     for (int i = 0; i < n; ++i)
     {
         c.data[i] = a.data[i] - b.data[i];
     }
+    return true;
 }
 
-void mul(const Matrix a, const Matrix b, Matrix c)
+bool mul(const Matrix a, const Matrix b, Matrix &c)
 {
-    if (a.cols != b.rows)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    if (a.cols != b.rows || !a.data || !b.data)
+        return false;
     c.rows = a.rows;
     c.cols = b.cols;
     c.data = new double[c.rows * c.cols];
@@ -66,10 +58,13 @@ void mul(const Matrix a, const Matrix b, Matrix c)
             c.data[i * c.cols + j] = temp;
         }
     }
+    return true;
 }
 
-void mul(const Matrix a, const double b, Matrix c)
+bool mul(const Matrix a, const double b, Matrix &c)
 {
+    if (!a.data)
+        return false;
     c.rows = a.rows;
     c.cols = a.cols;
     c.data = new double[c.rows * c.cols];
@@ -79,10 +74,13 @@ void mul(const Matrix a, const double b, Matrix c)
     {
         c.data[i] = a.data[i] * b;
     }
+    return true;
 }
 
-void transpose(const Matrix a, Matrix b)
+bool transpose(const Matrix a, Matrix &b)
 {
+    if (!a.data)
+        return false;
     b.rows = a.cols;
     b.cols = a.rows;
     b.data = new double[b.rows * b.cols];
@@ -94,17 +92,15 @@ void transpose(const Matrix a, Matrix b)
             b.data[j * b.cols + i] = a.data[i * a.cols + j];
         }
     }
+    return true;
 }
 
 /*------------- Special Matrix --------------*/
-void add(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
+bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    if (a.rows != b.rows || a.cols != b.cols
+        || !a.table || !b.table)
+        return false;
     c.rows = a.rows;    c.cols = a.cols;
     // using a' term for the moment
     c.terms = a.terms;
@@ -161,44 +157,42 @@ void add(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
         c.table[count++] = a.table[i]; 
     for (; j < b.terms; ++j)
         c.table[count++] = b.table[j];
+    return true;
 }
 
-void sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
+bool sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    if (a.rows != b.rows || a.cols != b.cols
+        || !a.table || !b.table)
+        return false;
     SparseMatrix d;
-    mul(b, -1.0f, d);
-    add(a, d, c);
+    if(!mul(b, -1.0f, d))
+        return false;
+    if (!add(a, d, c))
+        return false;
+    return true;
 }
 
-void sub(const SparseMatrix a, const Matrix b, Matrix c)
+bool sub(const SparseMatrix a, const Matrix b, Matrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    if (a.rows != b.rows || a.cols != b.cols
+        || !a.table || !b.data)
+        return false;
     SparseMatrix new_b;
-    Nor2Spa(b, new_b);        
+    if (!Nor2Spa(b, new_b))
+        return false;
     SparseMatrix temp_c;
-    sub(a, new_b, temp_c);
-    Spa2Nor(temp_c, c);
+    if (!sub(a, new_b, temp_c))
+        return false;
+    if (!Spa2Nor(temp_c, c))
+        return false;
+    return true;
 }
 
-void mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
+bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
-    if (a.cols != b.rows)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    if (a.cols != b.rows || !a.table || !b.table)
+        return false;
     c.rows = a.rows;    c.cols = b.cols;
     // using a' term for the time
     c.terms = a.terms;
@@ -270,39 +264,41 @@ void mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix c)
     }
     delete [] nonzeros; delete [] term_starts;
     c.terms = count;
+    return true;
 }
 
 
-void mul(const SparseMatrix a, const Matrix b, SparseMatrix c)
+bool mul(const SparseMatrix a, const Matrix b, SparseMatrix &c)
 {
-    if (a.cols != b.rows)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    if (a.cols != b.rows || !a.table || !b.data)
+        return false;
     SparseMatrix new_b;
-    Nor2Spa(b, new_b);
-    mul(a, new_b, c);
+    if (!Nor2Spa(b, new_b))
+        return false;
+    if (!mul(a, new_b, c))
+        return false;
+    return true;
 }
 
-void mul(const SparseMatrix a, const Matrix b, Matrix c)
+bool mul(const SparseMatrix a, const Matrix b, Matrix &c)
 {
-    if (a.cols != b.rows)
-    {
-        cout << "Incompatible matrices!" << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    if (a.cols != b.rows || !a.table || !b.data)
+        return false;
     SparseMatrix new_b;
-    Nor2Spa(b, new_b);
+    if (!Nor2Spa(b, new_b))
+        return false;
     SparseMatrix temp_c;
-    mul(a, new_b, temp_c);
-    Spa2Nor(temp_c, c);
+    if (!mul(a, new_b, temp_c))
+        return false;
+    if (!Spa2Nor(temp_c, c))
+        return false;
+    return true;
 }
 
-void mul(const SparseMatrix a, const double b, SparseMatrix c)
+bool mul(const SparseMatrix a, const double b, SparseMatrix &c)
 {
+    if (!a.table)
+        return false;
     c.rows = a.rows;    c.cols = a.cols;
     c.terms = a.terms;
     if (!c.table)
@@ -313,10 +309,13 @@ void mul(const SparseMatrix a, const double b, SparseMatrix c)
         c.table[i] = a.table[i];
         c.table[i].value = a.table[i].value * b;
     }
+    return true;
 }
 
-void transpose(const SparseMatrix a, SparseMatrix b)
+bool transpose(const SparseMatrix a, SparseMatrix &b)
 {
+    if (!a.table)
+        return false;
     b.rows = a.cols;    b.cols = a.rows;
     b.terms = a.terms;
     if (!b.table)
@@ -336,10 +335,13 @@ void transpose(const SparseMatrix a, SparseMatrix b)
             }
         }
     }
+    return true;
 }
 
-void fastTranspose(const SparseMatrix a, SparseMatrix b)
+bool fastTranspose(const SparseMatrix a, SparseMatrix &b)
 {
+    if (!a.table)
+        return false;
     b.rows = a.rows;    b.cols = a.cols;
     b.terms = a.terms;
     b.table = new trituple[b.terms];
@@ -369,10 +371,14 @@ void fastTranspose(const SparseMatrix a, SparseMatrix b)
         term_starts[a.table[i].col]++;
     }
     delete [] nonzeros; delete [] term_starts;
+    
+    return true;
 }
 
-void Spa2Nor(const SparseMatrix a, Matrix b)
+bool Spa2Nor(const SparseMatrix a, Matrix &b)
 {
+    if (!a.table)
+        return false;
     // init matrix b
     b.cols = a.cols;    b.rows = a.rows;
     b.data = new double[b.cols * b.rows];
@@ -393,10 +399,13 @@ void Spa2Nor(const SparseMatrix a, Matrix b)
             }
         }
     }
+    return true;
 }
 
-void Nor2Spa(const Matrix a, SparseMatrix b)
+bool Nor2Spa(const Matrix a, SparseMatrix &b)
 {
+    if (!a.data)
+        return false;
     b.cols = a.cols;    b.rows = a.rows;
     // using rows  of a for the time
     b.terms = a.rows;
@@ -439,4 +448,5 @@ void Nor2Spa(const Matrix a, SparseMatrix b)
         delete [] b.table;
         b.table = p;
     }
+    return true;
 }

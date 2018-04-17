@@ -31,26 +31,26 @@ struct Matrix
 //      a - left matrix 
 //      b - right matrix
 //      c - result Matrix
-void add(const Matrix a, const Matrix b, Matrix c);
+bool add(const Matrix a, const Matrix b, Matrix &c);
 //  Subtraction Operation Declaration
 //      a - left matrix
 //      b - right matrix
 //      c - result matrix
-void sub(const Matrix a, const Matrix b, Matrix c);
+bool sub(const Matrix a, const Matrix b, Matrix &c);
 //  Multiplication Operation Declaration
 //      a - left matrix
 //      b - right matrix
 //      c - result matrix
-void mul(const Matrix a, const Matrix b, Matrix c);
+bool mul(const Matrix a, const Matrix b, Matrix &c);
 //  Multiplication Operation Declaration
 //      a - left matrix
 //      b - right matrix
 //      c - result matrix
-void mul(const Matrix a, const double b, Matrix c);
+bool mul(const Matrix a, const double b, Matrix &c);
 //  Matrix Transpose Operation Declaration
 //      a - operated matrix
 //      b - result matrix
-void transpose(const Matrix a, Matrix b);
+bool transpose(const Matrix a, Matrix &b);
 
 /*---------------- Special Matrix ----------------*/
 struct trituple
@@ -66,15 +66,15 @@ struct SparseMatrix
     trituple *table;
 };
 
-void add(const SparseMatrix a, const SparseMatrix b, SparseMatrix c);
-void add(const SparseMatrix a, const Matrix b, Matrix c);
-void sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix c);
-void sub(const SparseMatrix a, const Matrix b, Matrix c);
-void mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix c);
-void mul(const SparseMatrix a, const Matrix b, SparseMatrix c);
-void mul(const SparseMatrix a, const Matrix b, Matrix c);
-void mul(const SparseMatrix a, const double b, SparseMatrix c);
-void transpose(const SparseMatrix a, SparseMatrix b);
-void fastTranspose(const SparseMatrix a, SparseMatrix b);
-void Spa2Nor(const SparseMatrix a, Matrix b);
-void Nor2Spa(const Matrix a, SparseMatrix b);
+bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c);
+bool add(const SparseMatrix a, const Matrix b, Matrix &c);
+bool sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c);
+bool sub(const SparseMatrix a, const Matrix b, Matrix &c);
+bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c);
+bool mul(const SparseMatrix a, const Matrix b, SparseMatrix &c);
+bool mul(const SparseMatrix a, const Matrix b, Matrix &c);
+bool mul(const SparseMatrix a, const double b, SparseMatrix &c);
+bool transpose(const SparseMatrix a, SparseMatrix &b);
+bool fastTranspose(const SparseMatrix a, SparseMatrix &b);
+bool Spa2Nor(const SparseMatrix a, Matrix &b);
+bool Nor2Spa(const Matrix a, SparseMatrix &b);
