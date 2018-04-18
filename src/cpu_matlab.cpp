@@ -1,10 +1,15 @@
 #include <iostream>
+#include <iomanip>
 #include <cstdlib>
+#include <ctime>
 #include <cfloat>
+#include <cmath>
 #include "cpu_matlab.h"
 
 using std::cout;
 using std::endl;
+using std::ios;
+using std::setprecision;
 
 /*------------- Normal Matrix --------------*/
 bool add(const Matrix a, const Matrix b, Matrix &c)
@@ -93,6 +98,40 @@ bool transpose(const Matrix a, Matrix &b)
     return true;
 }
 
+void zeros(Matrix &a)
+{
+    a.data = new double[a.rows * a.cols];
+    for (unsigned i = 0; i < a.rows * a.cols; ++i)
+        a.data[i] = 0.0f;
+}
+
+void ones(Matrix &a)
+{
+    a.data = new double[a.rows * a.cols];
+    for (unsigned i = 0; i < a.rows * a.cols; ++i)
+        a.data[i] = 1.0f;
+}
+
+void rand(Matrix &a)
+{
+    srand((unsigned) time(NULL));
+    a.data = new double[a.rows * a.cols];
+    for (unsigned i = 0; i < a.rows * a.cols; ++i)
+        a.data[i] = (double)rand() / (double)RAND_MAX;
+}
+
+void print(const Matrix a)
+{
+    cout.setf(ios::fixed);
+    cout << "\n";
+    for (unsigned i = 0; i < a.rows; ++i)
+    {
+        for (unsigned j = 0; j < a.cols; ++j)
+            cout << setprecision(3) << a.data[i * a.cols + j] << " ";
+        cout << "\n";
+    }
+    cout << "\n";
+}
 /*------------- Special Matrix --------------*/
 bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
@@ -447,4 +486,61 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b)
         b.table = p;
     }
     return true;
+}
+
+void rand(SparseMatrix &a)
+{
+    srand((unsigned) time(NULL));
+    a.terms = rand() % (int)ceil(a.rows * a.cols * 0.05);
+    a.table = new trituple[a.terms];
+    int t = a.terms;
+    bool rows_cols[a.rows][a.cols] = {false};
+
+    while (t > 0)
+    {
+        unsigned r = rand() % a.rows;
+        unsigned c = rand() % a.cols;
+        
+        if (!rows_cols[r][c])
+        {
+            rows_cols[r][c] = true;
+            t--;
+        }
+    }
+    
+    for (unsigned i = 0; i < a.rows; ++i)
+    {
+        for (unsigned j = 0; j < a.cols; ++j)
+        {
+            if (rows_cols[i][j])
+            {
+                a.table[t].row = i;
+                a.table[t].col = j;
+                a.table[t].value = (double)rand() / (double) RAND_MAX;
+                t++;
+            }
+            if (t == a.terms)
+                break;
+        }
+        if (t == a.terms)
+            break;
+    }
+}
+
+void print(const trituple t)
+{
+    cout << "(" << t.row << "," << t.col << ")" 
+    << "\t" << t.value << endl;
+}
+
+void print(const SparseMatrix a)
+{
+    cout << "\n";
+    if (a.terms == 0)
+        cout << "All zero sparse: " << a.rows 
+        << "-by-" << a.cols << endl;
+    else
+        for (unsigned i = 0; i < a.terms; ++i)
+            print(a.table[i]);
+    cout << "\n";
 }
