@@ -135,60 +135,91 @@ void print(const Matrix a)
 /*------------- Special Matrix --------------*/
 bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols
-        || !a.table || !b.table)
-        return false;
     c.rows = a.rows;    c.cols = a.cols;
+    c.table = NULL;
+
+    // judge if matrices are compatible
+    if (a.rows != b.rows || a.cols != b.cols)
+        return false;
+    // judge if matrix is initialized
+    if (a.terms != 0 && !a.table)
+        return false;
+    if (b.terms != 0 && !b.table)
+        return false;
+    
+    if (a.terms == 0)
+    {
+        c.terms = b.terms;
+        c.table = new trituple[c.terms]; 
+        for (unsigned i = 0; i < c.terms; ++i)
+        {
+            c.table[i].row = b.table[i].row;
+            c.table[i].col = b.table[i].col;
+            c.table[i].value = b.table[i].value;
+        }
+        return true;
+    }
+    else if (b.terms == 0)
+    {
+        c.terms = a.terms;
+        c.table = new trituple[c.terms]; 
+        for (unsigned i = 0; i < c.terms; ++i)
+        {
+            c.table[i].row = a.table[i].row;
+            c.table[i].col = a.table[i].col;
+            c.table[i].value = a.table[i].value;
+        }
+        return true;
+    }
     // using a' term for the moment
     c.terms = a.terms;
-    
-    if (!c.table)
-        c.table = new trituple[a.terms]; 
+    c.table = new trituple[a.terms]; 
 
     unsigned index_a, index_b, count = 0;
     unsigned i = 0, j = 0, rows = a.rows, cols = a.cols;
     while (i < a.terms && j < b.terms)
     {
         index_a = a.cols * a.table[i].row + a.table[i].col;
-        index_b = b.cols * b.table[i].row + b.table[i].col;
+        index_b = b.cols * b.table[j].row + b.table[j].col;
         // check terms of matrix c
-        if (count >= (c.terms - 1))
+        if (count >= c.terms)
         {
             unsigned new_terms = c.terms * 2;
             // realloc memory for matrix c
             trituple *p = new trituple[new_terms];
             for (unsigned t = 0; t < c.terms; ++t)
-                p[i] = c.table[i];
+                p[t] = c.table[t];
             c.terms = new_terms;
             delete [] c.table;
             c.table = p;
         }
         if (index_a < index_b)
         {
-            c.table[count] = a.table[i++]; 
+            c.table[count] = a.table[i]; 
+            i++;
         }
         else if (index_a > index_b)
         {
-            c.table[count] = b.table[j++];
+            c.table[count] = b.table[j];
+            j++;
         }
         else
         {
             c.table[count] = a.table[i];
-            c.table[count].value = a.table[i++].value + b.table[j++].value;
+            c.table[count].value = a.table[i].value + b.table[j].value;
+            i++;    j++;
         }
         count++;
     }
     unsigned real_terms = count + a.terms - i + b.terms - j;
-    if (count >= (c.terms - 1))
-    {
-        // realloc memory for matrix c
-        trituple *p = new trituple[real_terms];
-        for (unsigned t = 0; t < c.terms; ++t)
-            p[i] = c.table[i];
-        c.terms = real_terms;
-        delete [] c.table;
-        c.table = p;
-    }    
+    // realloc memory for matrix c
+    trituple *p = new trituple[real_terms];
+    for (unsigned t = 0; t < count; ++t)
+        p[t] = c.table[t];
+    c.terms = real_terms;
+    delete [] c.table;
+    c.table = p;
+
     // copy remaining elements
     for (; i < a.terms; ++i)
         c.table[count++] = a.table[i]; 
@@ -492,7 +523,10 @@ void rand(SparseMatrix &a)
 {
     srand((unsigned) time(NULL));
     a.terms = rand() % (int)ceil(a.rows * a.cols * 0.05);
-    a.table = new trituple[a.terms];
+    if (a.terms == 0)
+        a.table = NULL;
+    else
+        a.table = new trituple[a.terms];
     int t = a.terms;
     bool rows_cols[a.rows][a.cols] = {false};
 
