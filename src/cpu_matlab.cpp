@@ -122,6 +122,11 @@ void rand(Matrix &a)
 
 void print(const Matrix a)
 {
+    if (check(a))
+    {
+        cout << "Invalid matrix!" << endl;
+        exit(EXIT_FAILURE);
+    }
     cout.setf(ios::fixed);
     cout << "\n";
     for (unsigned i = 0; i < a.rows; ++i)
@@ -132,6 +137,22 @@ void print(const Matrix a)
     }
     cout << "\n";
 }
+
+bool check(const Matrix &m)
+{
+    // check matrix row and column
+    if (m.rows == 0 || m.cols == 0)
+    {
+        cout << "Row or column can not be zero!" << endl;
+        return false;
+    }
+    if (!m.data)
+    {
+        cout << "Matrix data error!" << endl;
+        return false;
+    }
+
+}
 /*------------- Special Matrix --------------*/
 bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
@@ -141,12 +162,9 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
     // judge if matrices are compatible
     if (a.rows != b.rows || a.cols != b.cols)
         return false;
-    // judge if matrix is initialized
-    if (a.terms != 0 && !a.table)
-        return false;
-    if (b.terms != 0 && !b.table)
-        return false;
-    
+    // check validation of matrices
+    check(a);   check(b); 
+    // when matrix is all-zero matrix
     if (a.terms == 0)
     {
         c.terms = b.terms;
@@ -230,9 +248,10 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 
 bool sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols
-        || !a.table || !b.table)
+    if (a.rows != b.rows || a.cols != b.cols)
         return false;
+    // check validation of matrices
+    check(a);   check(b);
     SparseMatrix d;
     if(!mul(b, -1.0f, d))
         return false;
@@ -243,9 +262,12 @@ bool sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 
 bool sub(const SparseMatrix a, const Matrix b, Matrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols
-        || !a.table || !b.data)
+    if (a.rows != b.rows || a.cols != b.cols)
         return false;
+    c.rows = a.rows;    c.cols = c.cols;
+    c.data = NULL;
+    // check validation of matrices
+    check(a);   check(b);
     SparseMatrix new_b;
     if (!Nor2Spa(b, new_b))
         return false;
@@ -259,9 +281,12 @@ bool sub(const SparseMatrix a, const Matrix b, Matrix &c)
 
 bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
-    if (a.cols != b.rows || !a.table || !b.table)
+    if (a.cols != b.rows)
         return false;
     c.rows = a.rows;    c.cols = b.cols;
+    c.table = NULL;
+    // check validation of matrices
+    check(a);   check(b);
     // using a' term for the time
     c.terms = a.terms;
     c.table = new trituple[c.terms];
@@ -338,8 +363,12 @@ bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 
 bool mul(const SparseMatrix a, const Matrix b, SparseMatrix &c)
 {
-    if (a.cols != b.rows || !a.table || !b.data)
+    if (a.cols != b.rows)
         return false;
+    c.rows = a.rows;    c.cols = b.cols;
+    c.table = NULL;
+    // check validation of matrices
+    check(a);   check(b);
     SparseMatrix new_b;
     if (!Nor2Spa(b, new_b))
         return false;
@@ -350,8 +379,12 @@ bool mul(const SparseMatrix a, const Matrix b, SparseMatrix &c)
 
 bool mul(const SparseMatrix a, const Matrix b, Matrix &c)
 {
-    if (a.cols != b.rows || !a.table || !b.data)
+    if (a.cols != b.rows)
         return false;
+    c.rows = a.rows;    c.cols = b.cols;
+    c.data = NULL;
+    // check validation of matrices
+    check(a);   check(b);
     SparseMatrix new_b;
     if (!Nor2Spa(b, new_b))
         return false;
@@ -365,9 +398,10 @@ bool mul(const SparseMatrix a, const Matrix b, Matrix &c)
 
 bool mul(const SparseMatrix a, const double b, SparseMatrix &c)
 {
-    if (!a.table)
-        return false;
+    // check validation of matrix
+    check(a);
     c.rows = a.rows;    c.cols = a.cols;
+    c.table = NULL;
     c.terms = a.terms;
     if (!c.table)
         c.table = new trituple[c.terms];
@@ -382,12 +416,12 @@ bool mul(const SparseMatrix a, const double b, SparseMatrix &c)
 
 bool transpose(const SparseMatrix a, SparseMatrix &b)
 {
-    if (!a.table)
-        return false;
+    // check validation of matrix
+    check(a);
     b.rows = a.cols;    b.cols = a.rows;
+    b.table = NULL;
     b.terms = a.terms;
-    if (!b.table)
-        b.table = new trituple[b.terms];
+    b.table = new trituple[b.terms];
 
     unsigned count = 0;
     for (unsigned i = 0; i < a.cols; ++i)
@@ -408,9 +442,10 @@ bool transpose(const SparseMatrix a, SparseMatrix &b)
 
 bool fastTranspose(const SparseMatrix a, SparseMatrix &b)
 {
-    if (!a.table)
-        return false;
+    // check validation of matrix
+    check(a);
     b.rows = a.rows;    b.cols = a.cols;
+    b.table = NULL;
     b.terms = a.terms;
     b.table = new trituple[b.terms];
 
@@ -445,10 +480,11 @@ bool fastTranspose(const SparseMatrix a, SparseMatrix &b)
 
 bool Spa2Nor(const SparseMatrix a, Matrix &b)
 {
-    if (!a.table)
-        return false;
+    // check validation of matrix
+    check(a);
     // init matrix b
     b.cols = a.cols;    b.rows = a.rows;
+    b.data = NULL;
     b.data = new double[b.cols * b.rows];
 
     unsigned count = 0;
@@ -472,9 +508,10 @@ bool Spa2Nor(const SparseMatrix a, Matrix &b)
 
 bool Nor2Spa(const Matrix a, SparseMatrix &b)
 {
-    if (!a.data)
-        return false;
+    // check validation of matrix
+    check(a);
     b.cols = a.cols;    b.rows = a.rows;
+    b.table = NULL;
     // using rows  of a for the time
     b.terms = a.rows;
     b.table = new trituple[b.terms];
@@ -485,7 +522,7 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b)
         for (unsigned j = 0; j < a.cols; ++j)
         {
             // extend memory space of matrix b
-            if (count >= b.terms - 1)
+            if (count >= b.terms)
             {
                 unsigned new_terms = b.terms * 2;
                 // realloc memory for matrix b
@@ -569,6 +606,12 @@ void print(const trituple t)
 
 void print(const SparseMatrix a)
 {
+    // check validation of matrix
+    if (check(a))
+    {
+        cout << "Invalid matrix!" << endl;
+        exit(EXIT_FAILURE);
+    }
     cout << "\n";
     if (a.terms == 0)
         cout << "All zero sparse: " << a.rows 
@@ -577,4 +620,21 @@ void print(const SparseMatrix a)
         for (unsigned i = 0; i < a.terms; ++i)
             print(a.table[i]);
     cout << "\n";
+}
+
+bool check(const SparseMatrix &sm)
+{
+    // check matrix row and column
+    if (sm.rows == 0 || sm.cols == 0)
+    {
+        cout << "Row or column can not be zero!" << endl;
+        return false;
+    }
+    // check matrix term
+    if (sm.terms == 0 && sm.table != NULL ||
+        sm.terms != 0 && sm.table == NULL)
+    {
+        cout << "Sparse matrix data error!" << endl;
+        return false;
+    }
 }

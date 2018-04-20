@@ -64,6 +64,9 @@ void rand(Matrix &a);
 // a - matrix a
 void print(const Matrix a);
 
+// Check validation of matrix
+// m - Matrix
+bool check(const Matrix &m);
 /*---------------- Special Matrix ----------------*/
 struct trituple
 {
@@ -143,3 +146,6 @@ void rand(SparseMatrix &a);
 // Print sparse matrix
 // a - sparse matrix
 void print(const SparseMatrix a);
+// Check validation of sparse matrix
+// sm - Sparse matrix
+bool check(const SparseMatrix &sm);
