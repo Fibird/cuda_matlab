@@ -4,6 +4,7 @@
 #include <ctime>
 #include <cfloat>
 #include <cmath>
+#include <cstring>
 #include "cpu_matlab.h"
 
 using std::cout;
@@ -205,8 +206,9 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
             unsigned new_terms = c.terms * 2;
             // realloc memory for matrix c
             trituple *p = new trituple[new_terms];
-            for (unsigned t = 0; t < c.terms; ++t)
-                p[t] = c.table[t];
+//            for (unsigned t = 0; t < c.terms; ++t)
+//                p[t] = c.table[t];
+            memcpy(c.table, p, c.terms * sizeof(double));
             c.terms = new_terms;
             delete [] c.table;
             c.table = p;
@@ -232,8 +234,9 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
     unsigned real_terms = count + a.terms - i + b.terms - j;
     // realloc memory for matrix c
     trituple *p = new trituple[real_terms];
-    for (unsigned t = 0; t < count; ++t)
-        p[t] = c.table[t];
+   // for (unsigned t = 0; t < count; ++t)
+   //     p[t] = c.table[t];
+    memcpy(c.table, p, count * sizeof(double));
     c.terms = real_terms;
     delete [] c.table;
     c.table = p;
@@ -329,8 +332,9 @@ bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
             {
                 unsigned new_terms = c.terms * 2;
                 trituple *p = new trituple[new_terms];
-                for (unsigned t = 0; t < c.terms; ++t)
-                    p[t] = c.table[t];
+//                for (unsigned t = 0; t < c.terms; ++t)
+//                    p[t] = c.table[t];
+                memcpy(c.table, p, c.terms * sizeof(double));
                 c.terms = new_terms;
                 delete [] c.table;
                 c.table = p;
@@ -349,8 +353,9 @@ bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
     {
         // realloc memory for matrix c
         trituple *p = new trituple[count];
-        for (unsigned t = 0; t < count; ++t)
-            p[t] = c.table[t];
+ //       for (unsigned t = 0; t < count; ++t)
+ //           p[t] = c.table[t];
+        memcpy(c.table, p, count * sizeof(double));
         c.terms = count;
         delete [] c.table;
         c.table = p;
@@ -527,8 +532,9 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b)
                 unsigned new_terms = b.terms * 2;
                 // realloc memory for matrix b
                 trituple *p = new trituple[new_terms];
-                for (unsigned t = 0; t < b.terms; ++t)
-                    p[t] = b.table[t];
+//                for (unsigned t = 0; t < b.terms; ++t)
+//                    p[t] = b.table[t];
+                memcpy(b.table, p, b.terms * sizeof(double));
                 b.terms = new_terms;
                 delete [] b.table;
                 b.table = p;
@@ -547,8 +553,9 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b)
     {
         // realloc memory for matrix b
         trituple *p = new trituple[count];
-        for (unsigned t = 0; t < count; ++t)
-            p[t] = b.table[t];
+ //       for (unsigned t = 0; t < count; ++t)
+ //           p[t] = b.table[t];
+        memcpy(b.table, p, count * sizeof(double));
         b.terms = count;
         delete [] b.table;
         b.table = p;

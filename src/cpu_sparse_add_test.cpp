@@ -14,53 +14,45 @@ int main(int argc, char **argv)
 {
     srand((unsigned) time(NULL));
     bool flag;
-
-    SparseMatrix a, b, c;
-//    a.rows = rand() % MAX_ROW + 1;
-//    b.rows = rand() % MAX_ROW + 1;
-//    a.cols = rand() % MAX_COL + 1;
-//    b.cols = rand() % MAX_COL + 1;
-//    c.table = NULL;
-    a.rows = atoi(argv[1]);   a.cols = atoi(argv[2]);
-    b.rows = atoi(argv[3]);   b.cols = atoi(argv[4]);
-
+    
+    //////// Test Case 1 ////////
+    SparseMatrix t1_a, t1_b, t1_c;
+    t1_a.rows = 8;      t1_a.cols = 8;
+    t1_b.rows = 9;      t1_b.cols = 5;
     // init matrices
-    rand(a);
+    rand(t1_a);
     sleep(1);
-    rand(b); 
+    rand(t1_b); 
 
-//    a.table[1].row = 0; a.table[1].col = 4; a.table[1].value = 0.34;
-//    b.table[1].row = 0; b.table[1].col = 1; b.table[1].value = 0.45;
-//    b.table[2].row = 0; b.table[2].col = 4; b.table[2].value = 0.23;
     cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
-    cout << "Size: " << a.rows << "x" << a.cols << endl;
+    cout << "Size: " << t1_a.rows << "x" << t1_a.cols << endl;
     // print sparse matrix a
-    print(a);
+    print(t1_a);
 
     cout << "Test Matrix B:" << endl;
-    cout << "Size: " << b.rows << "x" << b.cols << endl;
+    cout << "Size: " << t1_b.rows << "x" << t1_b.cols << endl;
     // print sparse matrix b
-    print(b);
+    print(t1_b);
 
     cout << "Addition Test Result:" << endl;
-    if (add(a, b, c))
+    if (add(t1_a, t1_b, t1_c))
     {
         cout << "Get result Matrix C:" << endl;
-        cout << "Size: " << c.rows << "x" << c.cols << endl;
-        print(c);
+        cout << "Size: " << t1_c.rows << "x" << t1_c.cols << endl;
+        print(t1_c);
     }
     else
     {
         cout << "Incompatible Matrices!" << endl;
     }
 
-    if (a.table)
-        delete [] a.table; 
-    if (b.table)
-        delete [] b.table;
-    if (c.table)
-        delete [] c.table;
+    if (t1_a.table)
+        delete [] t1_a.table; 
+    if (t1_b.table)
+        delete [] t1_b.table;
+    if (t1_c.table)
+        delete [] t1_c.table;
 
     return 0;
 }
