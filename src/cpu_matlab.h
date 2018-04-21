@@ -143,6 +143,9 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b);
 // Initialize sparse matrix with random term and random numbers
 // a - sparse matrix a
 void rand(SparseMatrix &a);
+// Initialize sparse matrix with zeros
+// a - sparse matrix
+void zeros(SparseMatrix &a);
 // Print sparse matrix
 // a - sparse matrix
 void print(const SparseMatrix a);

@@ -4,6 +4,7 @@
 #include <ctime>
 #include <cfloat>
 #include <cmath>
+#include <cstring>
 #include "cpu_matlab.h"
 
 using std::cout;
@@ -122,7 +123,7 @@ void rand(Matrix &a)
 
 void print(const Matrix a)
 {
-    if (check(a))
+    if (!check(a))
     {
         cout << "Invalid matrix!" << endl;
         exit(EXIT_FAILURE);
@@ -165,7 +166,13 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
     // check validation of matrices
     check(a);   check(b); 
     // when matrix is all-zero matrix
-    if (a.terms == 0)
+    if (a.terms == 0 && b.terms == 0)
+    {
+        c.terms = 0;
+        c.table = NULL;
+        return true;
+    }
+    else if (a.terms == 0)
     {
         c.terms = b.terms;
         c.table = new trituple[c.terms]; 
@@ -189,6 +196,7 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
         }
         return true;
     }
+    
     // using a' term for the moment
     c.terms = a.terms;
     c.table = new trituple[a.terms]; 
@@ -207,6 +215,7 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
             trituple *p = new trituple[new_terms];
             for (unsigned t = 0; t < c.terms; ++t)
                 p[t] = c.table[t];
+   //         memcpy(c.table, p, c.terms * sizeof(double));
             c.terms = new_terms;
             delete [] c.table;
             c.table = p;
@@ -234,6 +243,7 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
     trituple *p = new trituple[real_terms];
     for (unsigned t = 0; t < count; ++t)
         p[t] = c.table[t];
+    //memcpy(c.table, p, count * sizeof(double));
     c.terms = real_terms;
     delete [] c.table;
     c.table = p;
@@ -329,8 +339,9 @@ bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
             {
                 unsigned new_terms = c.terms * 2;
                 trituple *p = new trituple[new_terms];
-                for (unsigned t = 0; t < c.terms; ++t)
-                    p[t] = c.table[t];
+//                for (unsigned t = 0; t < c.terms; ++t)
+//                    p[t] = c.table[t];
+                memcpy(c.table, p, c.terms * sizeof(double));
                 c.terms = new_terms;
                 delete [] c.table;
                 c.table = p;
@@ -349,8 +360,9 @@ bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
     {
         // realloc memory for matrix c
         trituple *p = new trituple[count];
-        for (unsigned t = 0; t < count; ++t)
-            p[t] = c.table[t];
+ //       for (unsigned t = 0; t < count; ++t)
+ //           p[t] = c.table[t];
+        memcpy(c.table, p, count * sizeof(double));
         c.terms = count;
         delete [] c.table;
         c.table = p;
@@ -527,8 +539,9 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b)
                 unsigned new_terms = b.terms * 2;
                 // realloc memory for matrix b
                 trituple *p = new trituple[new_terms];
-                for (unsigned t = 0; t < b.terms; ++t)
-                    p[t] = b.table[t];
+//                for (unsigned t = 0; t < b.terms; ++t)
+//                    p[t] = b.table[t];
+                memcpy(b.table, p, b.terms * sizeof(double));
                 b.terms = new_terms;
                 delete [] b.table;
                 b.table = p;
@@ -547,8 +560,9 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b)
     {
         // realloc memory for matrix b
         trituple *p = new trituple[count];
-        for (unsigned t = 0; t < count; ++t)
-            p[t] = b.table[t];
+ //       for (unsigned t = 0; t < count; ++t)
+ //           p[t] = b.table[t];
+        memcpy(b.table, p, count * sizeof(double));
         b.terms = count;
         delete [] b.table;
         b.table = p;
@@ -598,6 +612,12 @@ void rand(SparseMatrix &a)
     }
 }
 
+void zeros(SparseMatrix &sm)
+{
+    sm.terms = 0;
+    sm.table = NULL;
+}
+
 void print(const trituple t)
 {
     cout << "(" << t.row << "," << t.col << ")" 
@@ -607,7 +627,7 @@ void print(const trituple t)
 void print(const SparseMatrix a)
 {
     // check validation of matrix
-    if (check(a))
+    if (!check(a))
     {
         cout << "Invalid matrix!" << endl;
         exit(EXIT_FAILURE);
