@@ -143,7 +143,7 @@ bool check(const Matrix &m)
     // check matrix row and column
     if (m.rows == 0 || m.cols == 0)
     {
-        cout << "Row or column can not be zero!" << endl;
+        cout << "Row or column of matrix can not be zero!" << endl;
         return false;
     }
     if (!m.data)
@@ -151,7 +151,7 @@ bool check(const Matrix &m)
         cout << "Matrix data error!" << endl;
         return false;
     }
-
+    return true;
 }
 /*------------- Special Matrix --------------*/
 bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
@@ -627,7 +627,7 @@ bool check(const SparseMatrix &sm)
     // check matrix row and column
     if (sm.rows == 0 || sm.cols == 0)
     {
-        cout << "Row or column can not be zero!" << endl;
+        cout << "Row or column of sparse matrix can not be zero!" << endl;
         return false;
     }
     // check matrix term
@@ -637,4 +637,5 @@ bool check(const SparseMatrix &sm)
         cout << "Sparse matrix data error!" << endl;
         return false;
     }
+    return true;
 }
