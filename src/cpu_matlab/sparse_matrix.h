@@ -18,65 +18,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-/*---------------- Normal Matrix ----------------*/
-struct Matrix
-{
-    unsigned rows;
-    unsigned cols;
-    double *data;
-};
+#ifndef SPARSE_MATRIX_H
+#define SPARSE_MATRIX_H
+#include "matrix.h"
 
-// Add two matrices and returns matrix c
-// a - left matrix 
-// b - right matrix
-// c - result Matrix
-bool add(const Matrix a, const Matrix b, Matrix &c);
-
-// Subtracts matrix b from matrix a and return matrix c
-// a - left matrix
-// b - right matrix
-// c - result matrix
-bool sub(const Matrix a, const Matrix b, Matrix &c);
-
-// Matrix a multiplies matrix b and returns matrix c
-// a - left matrix
-// b - right matrix
-// c - result matrix
-bool mul(const Matrix a, const Matrix b, Matrix &c);
-
-// Matrix a multiplies a number by elements
-// a - left matrix
-// b - a number
-// c - result matrix
-bool mul(const Matrix a, const double b, Matrix &c);
-
-// Transpose matrix
-// a - operated matrix
-// b - result matrix
-bool transpose(const Matrix a, Matrix &b);
-
-// Initialize matrix with zeros
-// a - matrix a
-void zeros(Matrix &a);
-
-// Initialize matrix with ones
-// a - matrix a
-void ones(Matrix &a);
-
-// Initialize matrix with random numbers
-// a - matrix a
-void rand(Matrix &a);
-
-// Print matrix a
-// a - matrix a
-void print(const Matrix a);
-
-// Check validation of matrix
-// m - Matrix
-bool check(const Matrix &m);
-
-/*---------------- Special Matrix ----------------*/
 struct trituple
 {
     unsigned row, col;
@@ -189,3 +134,4 @@ void print(const SparseMatrix a);
 // Check validation of sparse matrix
 // sm - Sparse matrix
 bool check(const SparseMatrix &sm);
+#endif

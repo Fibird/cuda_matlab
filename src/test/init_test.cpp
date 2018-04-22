@@ -1,7 +1,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include "cpu_matlab.h"
+#include "matrix.h"
+#include "sparse_matrix.h"
 
 using namespace std;
 

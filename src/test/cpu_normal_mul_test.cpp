@@ -1,8 +1,8 @@
-#include "cpu_matlab.h"
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <iomanip>
+#include "sparse_matrix.h"
 
 #define MAX_ROW 10
 #define MAX_COL 10
@@ -50,9 +50,10 @@ int main(int argc, char **argv)
             cout << setprecision(2) << t1_b.data[i * t1_b.cols +j] << " "; 
         cout << endl;
     }
+    
 
-    cout << "Addition Test Result:" << endl;
-    if (add(t1_a, t1_b, t1_c))
+    cout << "Vector Multiplication Test Result:" << endl;
+    if (mul(t1_a, t1_b, t1_c))
     {
         cout << "Get result Matrix C:" << endl;
         cout << "Size: " << t1_c.rows << "x" << t1_c.cols << endl;
@@ -68,8 +69,10 @@ int main(int argc, char **argv)
         cout << "Incompatible Matrices!" << endl;
     }
     
-    cout << "Subtraction Test Result:" << endl;
-    if (sub(t1_a, t1_b, t1_c))
+    double test_num = (double) rand() / (double) RAND_MAX;
+    cout << "Test Data B: " << test_num << endl;
+    cout << "Scalar Multiplication Test Result:" << endl;
+    if (mul(t1_a, test_num, t1_c))
     {
         cout << "Get result Matrix C:" << endl;
         cout << "Size: " << t1_c.rows << "x" << t1_c.cols << endl;

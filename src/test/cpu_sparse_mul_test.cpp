@@ -1,9 +1,9 @@
-#include "cpu_matlab.h"
 #include <cstdlib>
 #include <ctime>
 #include <unistd.h>
 #include <iostream>
 #include <iomanip>
+#include "sparse_matrix.h"
 
 #define MAX_ROW 10
 #define MAX_COL 10

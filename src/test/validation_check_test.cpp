@@ -1,5 +1,5 @@
 #include <iostream>
-#include "cpu_matlab.h"
+#include "sparse_matrix.h"
 
 using namespace std;
 
