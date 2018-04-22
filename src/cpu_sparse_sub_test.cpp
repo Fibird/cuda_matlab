@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     print(t1_b);
 
     cout << "Addition Test Result:" << endl;
-    if (add(t1_a, t1_b, t1_c))
+    if (sub(t1_a, t1_b, t1_c))
     {
         cout << "Get result Matrix C:" << endl;
         cout << "Size: " << t1_c.rows << "x" << t1_c.cols << endl;
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
     print(t2_b);
 
     cout << "Addition Test Result:" << endl;
-    if (add(t2_a, t2_b, t2_c))
+    if (sub(t2_a, t2_b, t2_c))
     {
         cout << "Get result Matrix C:" << endl;
         cout << "Size: " << t2_c.rows << "x" << t2_c.cols << endl;
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
     print(t3_b);
 
     cout << "Addition Test Result:" << endl;
-    if (add(t3_a, t3_b, t3_c))
+    if (sub(t3_a, t3_b, t3_c))
     {
         cout << "Get result Matrix C:" << endl;
         cout << "Size: " << t3_c.rows << "x" << t3_c.cols << endl;
@@ -162,7 +162,7 @@ int main(int argc, char **argv)
     print(t4_b);
 
     cout << "Addition Test Result:" << endl;
-    if (add(t4_a, t4_b, t4_c))
+    if (sub(t4_a, t4_b, t4_c))
     {
         cout << "Get result Matrix C:" << endl;
         cout << "Size: " << t4_c.rows << "x" << t4_c.cols << endl;
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
     print(t5_b);
 
     cout << "Addition Test Result:" << endl;
-    if (add(t5_a, t5_b, t5_c))
+    if (sub(t5_a, t5_b, t5_c))
     {
         cout << "Get result Matrix C:" << endl;
         cout << "Size: " << t5_c.rows << "x" << t5_c.cols << endl;
@@ -244,7 +244,7 @@ int main(int argc, char **argv)
     print(t6_b);
 
     cout << "Addition Test Result:" << endl;
-    if (add(t6_a, t6_b, t6_c))
+    if (sub(t6_a, t6_b, t6_c))
     {
         cout << "Get result Matrix C:" << endl;
         cout << "Size: " << t6_c.rows << "x" << t6_c.cols << endl;

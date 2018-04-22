@@ -157,14 +157,19 @@ bool check(const Matrix &m)
 /*------------- Special Matrix --------------*/
 bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
-    c.rows = a.rows;    c.cols = a.cols;
     c.table = NULL;
 
     // judge if matrices are compatible
     if (a.rows != b.rows || a.cols != b.cols)
         return false;
     // check validation of matrices
-    check(a);   check(b); 
+    if (!check(a))
+        return false;
+    if (!check(b))
+        return false; 
+
+    c.rows = a.rows;    c.cols = a.cols;
+
     // when matrix is all-zero matrix
     if (a.terms == 0 && b.terms == 0)
     {
@@ -197,6 +202,7 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
         return true;
     }
     
+    // when sparse matrices not all-zeros
     // using a' term for the moment
     c.terms = a.terms;
     c.table = new trituple[a.terms]; 
@@ -213,9 +219,7 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
             unsigned new_terms = c.terms * 2;
             // realloc memory for matrix c
             trituple *p = new trituple[new_terms];
-            for (unsigned t = 0; t < c.terms; ++t)
-                p[t] = c.table[t];
-   //         memcpy(c.table, p, c.terms * sizeof(double));
+            memcpy(p, c.table, c.terms * sizeof(trituple));
             c.terms = new_terms;
             delete [] c.table;
             c.table = p;
@@ -241,9 +245,7 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
     unsigned real_terms = count + a.terms - i + b.terms - j;
     // realloc memory for matrix c
     trituple *p = new trituple[real_terms];
-    for (unsigned t = 0; t < count; ++t)
-        p[t] = c.table[t];
-    //memcpy(c.table, p, count * sizeof(double));
+    memcpy(p, c.table, count * sizeof(trituple));
     c.terms = real_terms;
     delete [] c.table;
     c.table = p;
@@ -253,50 +255,141 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
         c.table[count++] = a.table[i]; 
     for (; j < b.terms; ++j)
         c.table[count++] = b.table[j];
+
     return true;
+}
+
+bool add(const SparseMatrix a, const Matrix b, Matrix &c)
+{
+    c.data = NULL;
+
+    if (a.rows != b.rows || a.cols != b.cols)
+        return false;
+
+    c.rows = a.rows;    c.cols = c.cols;
+
+    // check validation of matrices
+    if (!check(a))
+        return false;
+    if (!check(b))
+        return false; 
+
+    SparseMatrix new_b;
+    if (!Nor2Spa(b, new_b))
+        return false;
+
+    SparseMatrix temp_c;
+    if (!add(a, new_b, temp_c))
+        return false;
+
+    // free memory of temporary variable
+    if (new_b.table)
+        delete [] new_b.table;
+
+    if (!Spa2Nor(temp_c, c))
+        return false;
+
+    // free memory of temporary variable
+    if (temp_c.table)
+        delete [] temp_c.table;
+
+    return true;
+}
+
+bool add(const Matrix a, const SparseMatrix b, Matrix &c)
+{
+    return add(b, a, c);
 }
 
 bool sub(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
+    c.table = NULL;
+
     if (a.rows != b.rows || a.cols != b.cols)
         return false;
+
     // check validation of matrices
-    check(a);   check(b);
+    if (!check(a))
+        return false;
+    if (!check(b))
+        return false; 
+
     SparseMatrix d;
     if(!mul(b, -1.0f, d))
         return false;
+
     if (!add(a, d, c))
         return false;
+    if (d.table)
+        delete [] d.table;
+
     return true;
 }
 
 bool sub(const SparseMatrix a, const Matrix b, Matrix &c)
 {
+    c.data = NULL;
+
     if (a.rows != b.rows || a.cols != b.cols)
         return false;
+
     c.rows = a.rows;    c.cols = c.cols;
-    c.data = NULL;
+
     // check validation of matrices
-    check(a);   check(b);
+    if (!check(a))
+        return false;
+    if (!check(b))
+        return false; 
+
     SparseMatrix new_b;
     if (!Nor2Spa(b, new_b))
         return false;
+
     SparseMatrix temp_c;
     if (!sub(a, new_b, temp_c))
         return false;
+
+    // free memory of temporary variable
+    if (new_b.table)
+        delete [] new_b.table;
+
     if (!Spa2Nor(temp_c, c))
         return false;
+
+    // free memory of temporary variable
+    if (temp_c.table)
+        delete [] temp_c.table;
+
     return true;
+}
+
+bool sub(const Matrix a, const SparseMatrix b, Matrix &c)
+{
+    return sub(b, a, c);
 }
 
 bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
 {
+    c.table = NULL;
+
     if (a.cols != b.rows)
         return false;
-    c.rows = a.rows;    c.cols = b.cols;
-    c.table = NULL;
     // check validation of matrices
-    check(a);   check(b);
+    if (!check(a))
+        return false;
+    if (!check(b))
+        return false; 
+ 
+    c.rows = a.rows;    c.cols = b.cols;
+
+    // when sparse matrices all-zeros
+    if (a.terms == 0 || b.terms == 0)
+    {
+        c.terms = 0;
+        return true;
+    }
+
+    // when sparse matrices not all-zeros
     // using a' term for the time
     c.terms = a.terms;
     c.table = new trituple[c.terms];
@@ -339,9 +432,7 @@ bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
             {
                 unsigned new_terms = c.terms * 2;
                 trituple *p = new trituple[new_terms];
-//                for (unsigned t = 0; t < c.terms; ++t)
-//                    p[t] = c.table[t];
-                memcpy(c.table, p, c.terms * sizeof(double));
+                memcpy(p, c.table, c.terms * sizeof(trituple));
                 c.terms = new_terms;
                 delete [] c.table;
                 c.table = p;
@@ -355,69 +446,105 @@ bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
             }
         }
     }
+
     // remove excessive memory space
-    if (c.terms > count)
+    if (count == 0)
+    {
+        delete [] c.table;
+        c.table = NULL;
+        c.terms = 0;
+    }
+    else if (c.terms > count)
     {
         // realloc memory for matrix c
         trituple *p = new trituple[count];
- //       for (unsigned t = 0; t < count; ++t)
- //           p[t] = c.table[t];
-        memcpy(c.table, p, count * sizeof(double));
+        memcpy(p, c.table, count * sizeof(trituple));
         c.terms = count;
         delete [] c.table;
         c.table = p;
     }
     delete [] nonzeros; delete [] term_starts;
-    c.terms = count;
     return true;
 }
 
 
 bool mul(const SparseMatrix a, const Matrix b, SparseMatrix &c)
 {
+    c.table = NULL;
+
     if (a.cols != b.rows)
         return false;
+
     c.rows = a.rows;    c.cols = b.cols;
-    c.table = NULL;
+
     // check validation of matrices
-    check(a);   check(b);
+    if (!check(a))
+        return false;
+    if (!check(b))
+        return false; 
+
     SparseMatrix new_b;
     if (!Nor2Spa(b, new_b))
         return false;
+
     if (!mul(a, new_b, c))
         return false;
+    if (new_b.table)
+        delete [] new_b.table;
+
     return true;
 }
 
 bool mul(const SparseMatrix a, const Matrix b, Matrix &c)
 {
+    c.data = NULL;
+
     if (a.cols != b.rows)
         return false;
+        
     c.rows = a.rows;    c.cols = b.cols;
-    c.data = NULL;
+
     // check validation of matrices
-    check(a);   check(b);
+    if (!check(a))
+        return false;
+    if (!check(b))
+        return false; 
+
     SparseMatrix new_b;
     if (!Nor2Spa(b, new_b))
         return false;
+
     SparseMatrix temp_c;
     if (!mul(a, new_b, temp_c))
         return false;
+    if (new_b.table)
+        delete [] new_b.table;
+
     if (!Spa2Nor(temp_c, c))
         return false;
+    if (temp_c.table)
+        delete [] temp_c.table;
+
     return true;
 }
 
 bool mul(const SparseMatrix a, const double b, SparseMatrix &c)
 {
-    // check validation of matrix
-    check(a);
-    c.rows = a.rows;    c.cols = a.cols;
     c.table = NULL;
-    c.terms = a.terms;
-    if (!c.table)
-        c.table = new trituple[c.terms];
 
+    // check validation of matrix
+    if (!check(a))
+        return false;
+
+    c.rows = a.rows;    c.cols = a.cols;
+    c.terms = a.terms;
+
+    // when a is all-zeros sparse matrix
+    if (c.terms == 0)
+        return true;
+
+    // when a is not all-zeros sparse matrix
+    c.table = new trituple[c.terms];
     for (int i = 0; i < a.terms; ++i)
     {
         c.table[i] = a.table[i];
@@ -428,13 +555,21 @@ bool mul(const SparseMatrix a, const double b, SparseMatrix &c)
 
 bool transpose(const SparseMatrix a, SparseMatrix &b)
 {
-    // check validation of matrix
-    check(a);
-    b.rows = a.cols;    b.cols = a.rows;
     b.table = NULL;
-    b.terms = a.terms;
-    b.table = new trituple[b.terms];
 
+    // check validation of matrix
+    if (!check(a))
+        return false;
+
+    b.rows = a.cols;    b.cols = a.rows;
+    b.terms = a.terms;
+
+    // when a is all-zeros sparse matrix
+    if (b.terms == 0)
+        return true;
+    
+    // when a is not all-zeros sparse matrix
+    b.table = new trituple[b.terms];
     unsigned count = 0;
     for (unsigned i = 0; i < a.cols; ++i)
     {
@@ -454,13 +589,21 @@ bool transpose(const SparseMatrix a, SparseMatrix &b)
 
 bool fastTranspose(const SparseMatrix a, SparseMatrix &b)
 {
-    // check validation of matrix
-    check(a);
-    b.rows = a.rows;    b.cols = a.cols;
     b.table = NULL;
-    b.terms = a.terms;
-    b.table = new trituple[b.terms];
 
+    // check validation of matrix
+    if (!check(a))
+        return false;
+
+    b.rows = a.cols;    b.cols = a.rows;
+    b.terms = a.terms;
+
+    // when a is all-zeros sparse matrix
+    if (b.terms == 0)
+        return true;
+
+    // when a is not all-zeros sparse matrix
+    b.table = new trituple[b.terms];
     unsigned *nonzeros = new unsigned[a.cols];
     unsigned *term_starts = new unsigned[a.cols];
 
@@ -492,13 +635,23 @@ bool fastTranspose(const SparseMatrix a, SparseMatrix &b)
 
 bool Spa2Nor(const SparseMatrix a, Matrix &b)
 {
+    b.data = NULL;
+
     // check validation of matrix
-    check(a);
+    if (!check(a))
+        return false;
     // init matrix b
     b.cols = a.cols;    b.rows = a.rows;
-    b.data = NULL;
-    b.data = new double[b.cols * b.rows];
+    
+    // when a is all-zeros sparse matrix
+    if (a.terms == 0)
+    {
+        zeros(b);
+        return true;
+    }
 
+    // when a is not all-zeros sparse matrix
+    b.data = new double[b.cols * b.rows];
     unsigned count = 0;
     for (unsigned i = 0; i < b.rows; ++i)
     {
@@ -520,10 +673,13 @@ bool Spa2Nor(const SparseMatrix a, Matrix &b)
 
 bool Nor2Spa(const Matrix a, SparseMatrix &b)
 {
-    // check validation of matrix
-    check(a);
-    b.cols = a.cols;    b.rows = a.rows;
     b.table = NULL;
+
+    // check validation of matrix
+    if (!check(a))
+        return false;
+
+    b.cols = a.cols;    b.rows = a.rows;
     // using rows  of a for the time
     b.terms = a.rows;
     b.table = new trituple[b.terms];
@@ -539,9 +695,7 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b)
                 unsigned new_terms = b.terms * 2;
                 // realloc memory for matrix b
                 trituple *p = new trituple[new_terms];
-//                for (unsigned t = 0; t < b.terms; ++t)
-//                    p[t] = b.table[t];
-                memcpy(b.table, p, b.terms * sizeof(double));
+                memcpy(p, b.table, b.terms * sizeof(trituple));
                 b.terms = new_terms;
                 delete [] b.table;
                 b.table = p;
@@ -556,13 +710,17 @@ bool Nor2Spa(const Matrix a, SparseMatrix &b)
         }
     }
     // remove remaining memory space
-    if (b.terms > count)
+    if (count == 0)
+    {
+        delete [] b.table;
+        b.table = NULL;
+        b.terms = 0;
+    }
+    else if (b.terms > count)
     {
         // realloc memory for matrix b
         trituple *p = new trituple[count];
- //       for (unsigned t = 0; t < count; ++t)
- //           p[t] = b.table[t];
-        memcpy(b.table, p, count * sizeof(double));
+        memcpy(p, b.table, count * sizeof(trituple));
         b.terms = count;
         delete [] b.table;
         b.table = p;
@@ -620,8 +778,9 @@ void zeros(SparseMatrix &sm)
 
 void print(const trituple t)
 {
+    cout.setf(ios::fixed);
     cout << "(" << t.row << "," << t.col << ")" 
-    << "\t" << t.value << endl;
+    << "\t" << setprecision(3) << t.value << endl;
 }
 
 void print(const SparseMatrix a)
