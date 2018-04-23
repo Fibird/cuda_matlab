@@ -99,6 +99,11 @@ bool mul(const SparseMatrix a, const Matrix b, Matrix &c);
 // c - result sparse matrix
 bool mul(const SparseMatrix a, const double b, SparseMatrix &c);
 
+// Get the natural logarithm ln(a) of each element
+// a - input matrix
+// b - result matrix
+bool log(const SparseMatrix a, SparseMatrix &b);
+
 // Transpose sparse matrix
 // a - sparse matrix
 // b - result matrix

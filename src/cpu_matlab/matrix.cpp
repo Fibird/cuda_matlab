@@ -96,6 +96,18 @@ bool mul(const Matrix a, const double b, Matrix &c)
     return true;
 }
 
+bool log(const Matrix a, Matrix &b)
+{
+    b.data = NULL;
+    if (!check(a))
+        return false;
+    b.rows = a.rows;    b.cols = a.cols;
+    b.data = new double[b.rows * b.cols];
+    
+    for (unsigned i = 0; i < a.rows * a.cols; ++i)
+        b.data[i] = log(a.data[i]);    
+}
+
 bool transpose(const Matrix a, Matrix &b)
 {
     b.data = NULL;
