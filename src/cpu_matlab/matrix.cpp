@@ -14,9 +14,13 @@ using std::setprecision;
 
 bool add(const Matrix a, const Matrix b, Matrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols
-        || !a.data || !b.data)
+    c.data = NULL;
+
+    if (!check(a) || !check(b))
         return false;
+    if (a.rows != b.rows || a.cols != b.cols)
+        return false;
+
     int n = a.rows * a.cols;
     c.rows = a.rows;    c.cols = a.cols;
     c.data = new double[c.rows * c.cols];
@@ -29,9 +33,13 @@ bool add(const Matrix a, const Matrix b, Matrix &c)
 
 bool sub(const Matrix a, const Matrix b, Matrix &c)
 {
-    if (a.rows != b.rows || a.cols != b.cols
-        || !a.data || !b.data)   
+    c.data = NULL;
+
+    if (!check(a) || !check(b))
         return false;
+    if (a.rows != b.rows || a.cols != b.cols)
+        return false;
+
     int n = a.rows * a.cols;
     c.rows = a.rows;    c.cols = a.cols;
     c.data = new double[c.rows * c.cols];
@@ -45,8 +53,13 @@ bool sub(const Matrix a, const Matrix b, Matrix &c)
 
 bool mul(const Matrix a, const Matrix b, Matrix &c)
 {
-    if (a.cols != b.rows || !a.data || !b.data)
+    c.data = NULL;
+
+    if (!check(a) || !check(b))
         return false;
+    if (a.cols != b.rows)
+        return false;
+
     c.rows = a.rows;
     c.cols = b.cols;
     c.data = new double[c.rows * c.cols];
@@ -66,8 +79,11 @@ bool mul(const Matrix a, const Matrix b, Matrix &c)
 
 bool mul(const Matrix a, const double b, Matrix &c)
 {
-    if (!a.data)
+    c.data = NULL;
+
+    if (!check(a))
         return false;
+
     c.rows = a.rows;
     c.cols = a.cols;
     c.data = new double[c.rows * c.cols];
@@ -82,8 +98,11 @@ bool mul(const Matrix a, const double b, Matrix &c)
 
 bool transpose(const Matrix a, Matrix &b)
 {
-    if (!a.data)
+    b.data = NULL;
+
+    if (!check(a))
         return false;
+
     b.rows = a.cols;
     b.cols = a.rows;
     b.data = new double[b.rows * b.cols];

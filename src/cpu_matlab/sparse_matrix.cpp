@@ -93,9 +93,13 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
         }
         else
         {
-            c.table[count] = a.table[i];
-            c.table[count].value = a.table[i].value + b.table[j].value;
+            double temp = a.table[i].value + b.table[j].value;
             i++;    j++;
+            // judge if is zero
+            if (temp <= DBL_EPSILON)
+                continue;
+            c.table[count] = a.table[i];
+            c.table[count].value = temp;
         }
         count++;
     }
@@ -294,7 +298,8 @@ bool mul(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
                 delete [] c.table;
                 c.table = p;
             }
-            if (temp[i] != 0)
+            // judge if is zero
+            if (temp[i] > DBL_EPSILON)
             {
                 c.table[count].row = a_cur_row;
                 c.table[count].col = i;
