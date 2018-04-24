@@ -690,6 +690,55 @@ void print(const trituple t)
     << "\t" << setprecision(3) << t.value << endl;
 }
 
+bool spdiag(const Matrix b, int *d, unsigned d_size, unsigned m, unsigned n, SparseMatrix &a)
+{
+    a.table = NULL;
+
+    if (!check(b))
+        return false;
+
+    a.rows = m; a.cols = n;
+    // compute terms of sparse matrix a
+    unsigned upper = m > n ? n : m;
+    unsigned lower = m > n ? m : n;
+    unsigned a_t = 0;
+    for (unsigned i = 0; i < d_size; ++i)
+    {
+        if (d[i] > 0)
+            a_t += lower - d[i];
+        if (d[i] <= 0)
+            a_t += upper + d[i];
+    }
+    a.terms = a_t;
+    a.table = new trituple[a.terms];
+    
+    // get sparse matrix a
+    unsigned count = 0;
+    for (unsigned i = 0; i < d_size; ++i) 
+    {
+         unsigned a_r, a_c;
+         unsigned b_r, b_c = i;
+         if (m >= n)
+         {
+            b_r = a_c = d[i] <= 0 ? 0 : d[i];
+            a_r = d[i] <= 0 ? -d[i] : 0;
+         }
+         else
+         {
+            b_r = a_r = d[i] <= 0 ? -d[i] : 0;
+            a_c = d[i] <= 0 ? 0 : d[i];
+         }
+         while (a_r < a.rows && a_c < a.cols)
+         {
+            a.table[count].row = a_r;
+            a.table[count].col = a_c;
+            a.table[count].value = b.data[b_r * b.cols + b_c];
+            count++;    b_r++;
+            a_r++;  a_c++;
+         }
+    }
+}
+
 void print(const SparseMatrix a)
 {
     // check validation of matrix

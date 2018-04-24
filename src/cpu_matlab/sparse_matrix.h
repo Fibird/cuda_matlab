@@ -132,6 +132,7 @@ void rand(SparseMatrix &a);
 // a - sparse matrix
 void zeros(SparseMatrix &a);
 
+bool spdiag(const Matrix b, int *d, unsigned d_size, unsigned m, unsigned n, SparseMatrix &a);
 // Print sparse matrix
 // a - sparse matrix
 void print(const SparseMatrix a);
