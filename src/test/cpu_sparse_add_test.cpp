@@ -228,9 +228,8 @@ int main(int argc, char **argv)
     t6_a.rows = 9;      t6_a.cols = 12;
     t6_b.rows = 9;      t6_b.cols = 12;
     // init matrices
-    // don't init a
-    sleep(1);
-    rand(t6_b); 
+    rand(t6_a);
+    mul(t6_a, -1, t6_b);
 
     cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;

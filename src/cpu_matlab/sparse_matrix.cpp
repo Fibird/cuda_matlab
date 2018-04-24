@@ -104,19 +104,26 @@ bool add(const SparseMatrix a, const SparseMatrix b, SparseMatrix &c)
         count++;
     }
     unsigned real_terms = count + a.terms - i + b.terms - j;
-    // realloc memory for matrix c
-    trituple *p = new trituple[real_terms];
-    memcpy(p, c.table, count * sizeof(trituple));
-    c.terms = real_terms;
-    delete [] c.table;
-    c.table = p;
+    if (count > 0)
+    {
+        trituple *p = new trituple[real_terms];
+        memcpy(p, c.table, count * sizeof(trituple));
+        c.terms = real_terms;
+        delete [] c.table;
+        c.table = p;
+    }
 
     // copy remaining elements
     for (; i < a.terms; ++i)
         c.table[count++] = a.table[i]; 
     for (; j < b.terms; ++j)
         c.table[count++] = b.table[j];
-
+    if (count == 0)
+    {
+        delete [] c.table;
+        c.table = NULL;
+        c.terms = 0;
+    }
     return true;
 }
 
@@ -689,7 +696,8 @@ void print(const SparseMatrix a)
     if (!check(a))
     {
         cout << "Invalid matrix!" << endl;
-        exit(EXIT_FAILURE);
+        //exit(EXIT_FAILURE);
+        return;
     }
     cout << "\n";
     if (a.terms == 0)

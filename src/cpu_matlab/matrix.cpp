@@ -156,7 +156,8 @@ void print(const Matrix a)
     if (!check(a))
     {
         cout << "Invalid matrix!" << endl;
-        exit(EXIT_FAILURE);
+//        exit(EXIT_FAILURE);
+        return;
     }
     cout.setf(ios::fixed);
     cout << "\n";
