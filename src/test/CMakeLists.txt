@@ -1,6 +1,12 @@
-set(CPU_MATLAB_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/src/cpu_matlab)
+project(cpu_matlab_test)
+cmake_minimum_required(VERSION 3.5)
+
+set(MAIN_PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/../..)
+set(CPU_MATLAB_INCLUDE_DIRS ${MAIN_PROJECT_SOURCE_DIR}/src ${MAIN_PROJECT_SOURCE_DIR}/src/cpu_matlab)
+
 include_directories(${CPU_MATLAB_INCLUDE_DIRS})
 
+set(EXECUTABLE_OUTPUT_PATH ${MAIN_PROJECT_SOURCE_DIR}/bin/test)
 add_executable(init_test init_test.cpp)
 add_executable(cpu_transform_test cpu_transform_test.cpp)
 add_executable(validation_check_test validation_check_test.cpp)
@@ -16,7 +22,7 @@ add_executable(cpu_normal_mul_test cpu_normal_mul_test.cpp)
 add_executable(cpu_normal_add_test cpu_normal_add_test.cpp)
 add_executable(cpu_normal_sub_test cpu_normal_sub_test.cpp)
 
-set(CPU_MATLAB_LIBRARY_DIR ${PROJECT_SOURCE_DIR}/bin/lib)
+set(CPU_MATLAB_LIBRARY_DIR ${MAIN_PROJECT_SOURCE_DIR}/bin/lib)
 set(CPU_MATLAB_LIBS ${CPU_MATLAB_LIBRARY_DIR}/libcpu_matlab.so)
 
 target_link_libraries(init_test ${CPU_MATLAB_LIBS})
