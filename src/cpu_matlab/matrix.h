@@ -57,6 +57,12 @@ bool mul(const Matrix a, const double b, Matrix &c);
 // b - result matrix
 bool log(const Matrix a, Matrix &b);
 
+// Element-wise power
+// a - base matrix
+// b - exponent matrix
+// b - result matrix
+bool pow(const Matrix a, const Matrix b, Matrix &c);
+
 // Transpose matrix
 // a - operated matrix
 // b - result matrix

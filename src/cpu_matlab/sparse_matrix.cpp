@@ -458,6 +458,68 @@ bool log(const SparseMatrix a, SparseMatrix &b)
         delete [] b.table;
         b.table = p;
     }
+
+    return true;
+}
+
+bool pow(const SparseMatrix a, const SparseMatrix b, Matrix &c)
+{
+    c.data = NULL;
+
+    // check validation of matrix
+    if (!check(a) || !check(b))
+        return false;
+
+    if (a.rows != b.rows || a.cols != b.rows)
+        return false;
+    
+    c.rows = a.rows;    c.cols = a.cols;
+    c.data = new double[c.rows * c.cols];
+
+    // when a or b is all-zeros matrices
+    if (b.terms == 0)
+    {
+        for (unsigned i = 0; i < c.rows * c.cols; ++i)
+            c.data[i] = 1.0;
+        return true;
+    }
+    else if (a.terms == 0)
+    {
+        unsigned t_id = 0;
+        for (unsigned i = 0; i < c.rows; ++i)
+        {
+            for (unsigned j = 0; j < c.cols; ++j)
+            {
+                c.data[i * c.cols + j] = 1.0;
+                if (b.table[t_id].row == i &&
+                    b.table[t_id].col == j)         
+                {
+                     c.data[i * c.cols + j] =
+                     pow(0.0, b.table[t_id].value);    
+                     t_id++;
+                }
+            }
+        }
+        return true; 
+    }
+
+    // when a or b is not all-zeros matrices
+    unsigned t_id = 0;
+    for (unsigned i = 0; i < c.rows; ++i)
+    {
+        for (unsigned j = 0; j < c.cols; ++j)
+        {
+            c.data[i * c.cols + j] = 1.0f;
+            if (a.table[t_id].row == i &&
+                a.table[t_id].col == j)         
+            {
+                c.data[i * c.cols + j] =
+                pow(a.table[t_id].value, b.table[t_id].value);    
+                t_id++;
+            }
+        }
+    }
+    return true;
 }
 
 bool transpose(const SparseMatrix a, SparseMatrix &b)

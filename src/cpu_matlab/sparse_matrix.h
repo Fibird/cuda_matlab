@@ -104,6 +104,12 @@ bool mul(const SparseMatrix a, const double b, SparseMatrix &c);
 // b - result matrix
 bool log(const SparseMatrix a, SparseMatrix &b);
 
+// Element-wise power
+// a - base sparse matrix
+// b - exponent sparse matrix
+// b - result sparse matrix
+bool pow(const SparseMatrix a, const SparseMatrix b, Matrix &c);
+
 // Transpose sparse matrix
 // a - sparse matrix
 // b - result matrix
