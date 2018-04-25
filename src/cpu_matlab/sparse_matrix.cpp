@@ -422,46 +422,6 @@ bool mul(const SparseMatrix a, const double b, SparseMatrix &c)
     return true;
 }
 
-bool log(const SparseMatrix a, SparseMatrix &b)
-{
-    b.table = NULL;
-
-    if (!check(a))
-        return false;
-
-    b.rows = a.cols;    b.cols = a.rows;
-    b.terms = a.terms;
-    
-    if (a.terms == 0)
-    {
-        cout << "Log Error:Matrix a can not be all-zeros matrix!" << endl;
-        return false;
-    }
-    
-    unsigned count = 0;
-    for (unsigned i = 0; i < a.terms; ++i)
-    {
-        double temp = log(a.table[i].value);
-        if (temp <= DBL_EPSILON)
-            continue;
-        b.table[count] = a.table[i];
-        b.table[count].value = temp;
-        count++;
-    }
-    
-    // remove remaining memory space
-    if (count < b.terms)
-    {
-        trituple *p = new trituple[count];
-        memcpy(p, b.table, count * sizeof(trituple));
-        b.terms = count;
-        delete [] b.table;
-        b.table = p;
-    }
-
-    return true;
-}
-
 bool pow(const SparseMatrix a, const SparseMatrix b, Matrix &c)
 {
     c.data = NULL;

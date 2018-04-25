@@ -99,13 +99,22 @@ bool mul(const Matrix a, const double b, Matrix &c)
 bool log(const Matrix a, Matrix &b)
 {
     b.data = NULL;
+
     if (!check(a))
         return false;
+
     b.rows = a.rows;    b.cols = a.cols;
     b.data = new double[b.rows * b.cols];
     
     for (unsigned i = 0; i < a.rows * a.cols; ++i)
+    {
+        if (a.data[i] <= DBL_EPSILON)
+        {
+            cout << "Log Error: element should not be zero or negative!" << endl;
+            return false;
+        }
         b.data[i] = log(a.data[i]);    
+    }
 
     return true;
 }
