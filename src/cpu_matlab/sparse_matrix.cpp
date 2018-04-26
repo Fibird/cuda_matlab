@@ -712,7 +712,34 @@ void print(const trituple t)
     << "\t" << setprecision(3) << t.value << endl;
 }
 
-bool spdiag(const Matrix b, int *d, unsigned d_size, unsigned m, unsigned n, SparseMatrix &a)
+void mergeTable(trituple *&table, unsigned cols, unsigned mid, unsigned right)
+{
+    trituple temp[right];
+    unsigned i = 0;   unsigned j = mid;    unsigned k = 0;
+
+    // find smaller row * cols + col to put into temp
+    while (i < mid && j < right)
+    {
+        unsigned v1 = table[i].row * cols + table[i].col;
+        unsigned v2 = table[j].row * cols + table[j].col;
+        if (v1 <= v2)
+            temp[k++] = table[i++];
+        else
+            temp[k++] = table[j++];
+    }
+
+    // copy remaining elements
+    while (i < mid)
+        temp[k++] = table[i++];
+    while (j < right)
+        temp[k++] = table[j++];
+
+    // copy ordered elements to previous table
+    for (unsigned i = 0; i < right; ++i)
+        table[i] = temp[i];
+}
+
+bool spdiags(const Matrix b, int *d, unsigned d_size, unsigned m, unsigned n, SparseMatrix &a)
 {
     a.table = NULL;
 
@@ -721,16 +748,27 @@ bool spdiag(const Matrix b, int *d, unsigned d_size, unsigned m, unsigned n, Spa
 
     a.rows = m; a.cols = n;
     // compute terms of sparse matrix a
-    unsigned upper = m > n ? n : m;
-    unsigned lower = m > n ? m : n;
+    unsigned max = m > n ? m : n;
+    unsigned min = m > n ? n : m;
+    unsigned upper = m > n ? min : max;
+    unsigned lower = m > n ? max : min;
     unsigned a_t = 0;
+    unsigned cumlens[d_size]; // accumulative lengths of diagonals
+
+    // compute length of sparse matrix a
     for (unsigned i = 0; i < d_size; ++i)
     {
+        // compute accumulative lengths of diagonals
+        if (d[i] < 0)
+            a_t += lower + d[i];
         if (d[i] > 0)
-            a_t += lower - d[i];
-        if (d[i] <= 0)
-            a_t += upper + d[i];
+            a_t += upper - d[i];
+        if (d[i] == 0)
+            a_t += min;
+
+        cumlens[i] = a_t;
     }
+
     a.terms = a_t;
     a.table = new trituple[a.terms];
     
@@ -759,6 +797,12 @@ bool spdiag(const Matrix b, int *d, unsigned d_size, unsigned m, unsigned n, Spa
             a_r++;  a_c++;
          }
     }
+    // sort terms of sparse matrix
+    // using merge sort
+    for (unsigned i = 0; i < d_size - 1; ++i)
+        mergeTable(a.table, a.cols, cumlens[i], cumlens[i + 1]);
+
+    return true;
 }
 
 void print(const SparseMatrix a)
