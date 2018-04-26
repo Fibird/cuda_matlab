@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     
     cout << "Please enter size of result sparse matrix(height*widht): " << endl;
     cin >> m >> n;
-    spdiag(b, d, d_size, m, n, a);
+    spdiags(b, d, d_size, m, n, a);
 
     Matrix m_a;
     Spa2Nor(a, m_a);

@@ -61,7 +61,7 @@ int main()
     t3_a.rows = 4;  t3_a.cols = 5;
     zeros(t3_a);
 
-    cout << "------------- Test 2 --------------" << endl;
+    cout << "------------- Test 3 --------------" << endl;
     cout << "Matrix a:" << endl;
     cout << "Size:" << t3_a.rows << "x" << t3_a.cols << endl;
     print(t3_a);
@@ -80,6 +80,29 @@ int main()
     if (t3_b.data)
         delete [] t3_a.table;
 
+    /////// Test Case 4 ///////////
+    SparseMatrix t4_a; Matrix t4_b;
+
+    t4_a.rows = 10;  t4_a.cols = 8;
+    rand(t4_a);
+    cout << "------------- Test 4 --------------" << endl;
+    cout << "Matrix a:" << endl;
+    cout << "Size:" << t4_a.rows << "x" << t4_a.cols << endl;
+    print(t4_a);
+
+    if (Spa2Nor(t4_a, t4_b))
+    {
+        cout << "Transfomed Matrix b:" << endl;
+        cout << "Size:" << t4_b.rows << "x" << t4_b.cols << endl;
+        print(t4_b);
+    }
+    else
+        cout << "Error" << endl;
+    
+    if (t4_a.table)
+        delete [] t4_b.data;
+    if (t4_b.data)
+        delete [] t4_a.table;
 
     return 0;
 }
