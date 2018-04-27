@@ -68,6 +68,22 @@ bool pow(const Matrix a, const Matrix b, Matrix &c);
 // b - result matrix
 bool transpose(const Matrix a, Matrix &b);
 
+// Calculate determinant of matrix
+// a - input square matrix
+// d - determinant of matrix
+bool det(const Matrix a, double &d);
+
+// Solve linear systems
+// a - coefficient matrix
+// b - constant terms
+// set - solution set
+bool lup(const Matrix a, const double *b, double *&set);
+
+// Matrix inverse
+// a - input matrix
+// b - inverse of matrix a
+bool inv(const Matrix a, Matrix &b);
+
 // Initialize matrix with zeros
 // a - matrix a
 void zeros(Matrix &a);
