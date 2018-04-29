@@ -52,6 +52,12 @@ bool mul(const Matrix a, const Matrix b, Matrix &c);
 // c - result matrix
 bool mul(const Matrix a, const double b, Matrix &c);
 
+// Matrix a multiplies a number by elements
+// b - a number
+// a - left matrix
+// c - result matrix
+bool mul(const double b, const Matrix a, Matrix &c);
+
 // Get the natural logarithm ln(a) of each element
 // a - input matrix
 // b - result matrix

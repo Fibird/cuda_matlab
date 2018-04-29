@@ -99,6 +99,12 @@ bool mul(const SparseMatrix a, const Matrix b, Matrix &c);
 // c - result sparse matrix
 bool mul(const SparseMatrix a, const double b, SparseMatrix &c);
 
+// Sparse matrix a multiplies a number by element
+// b - a number
+// a - left sparse matrix
+// c - result sparse matrix
+bool mul(const double b, const SparseMatrix a, SparseMatrix &c);
+
 // Element-wise power
 // a - base sparse matrix
 // b - exponent sparse matrix
@@ -141,4 +147,12 @@ void print(const SparseMatrix a);
 // Check validation of sparse matrix
 // sm - Sparse matrix
 bool check(const SparseMatrix &sm);
+
+// Preconditioned conjugate gradients method
+// a - coefficient matrix(sparse and large)
+// b - constant terms
+// tol - tolerance of the method
+// maxit - maximum number of iterations
+// set - solution set
+bool pcg(const SparseMatrix a, double *b, double tol, unsigned maxit, double *&set);
 #endif

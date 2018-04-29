@@ -96,6 +96,11 @@ bool mul(const Matrix a, const double b, Matrix &c)
     return true;
 }
 
+bool mul(const double b, const Matrix a, Matrix &c)
+{
+    return mul(a, b, c);
+}
+
 bool log(const Matrix a, Matrix &b)
 {
     b.data = NULL;

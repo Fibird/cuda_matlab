@@ -422,6 +422,11 @@ bool mul(const SparseMatrix a, const double b, SparseMatrix &c)
     return true;
 }
 
+bool mul(const double b, const SparseMatrix a, SparseMatrix &c)
+{
+    return mul(a, b, c);
+}
+
 bool pow(const SparseMatrix a, const SparseMatrix b, Matrix &c)
 {
     c.data = NULL;
@@ -839,5 +844,134 @@ bool check(const SparseMatrix &sm)
         cout << "Sparse matrix data error!" << endl;
         return false;
     }
+    return true;
+}
+
+
+bool pcg(const SparseMatrix a, double *b, double tol, unsigned maxit, double *&set)
+{
+    // validation check
+    if (!check(a))
+        return false;
+
+    if (a.rows != a.cols)
+    {
+        cout << "Matrix a is not square matrix!" << endl;
+        return false;
+    }
+    
+    //set = new double[a.rows];
+    //for (unsigned i = 0; i < a.rows; ++i)
+     //   set[i] = 0.0;
+    
+    Matrix x;
+    x.rows = a.rows;    x.cols = 1;
+    //x.data = set;
+    x.data = new double[x.rows];
+    for (unsigned i = 0; i < x.rows; ++i)
+        x.data[i] = 0.0;
+    // init r
+    double *r = new double[a.rows];
+    memcpy(r, b, sizeof(double) * a.rows);
+    
+    // preconditioning matrix
+    SparseMatrix c;
+    c.rows = a.rows;    c.cols = a.cols;
+    // c is a diagonal matrix
+    c.terms = a.rows; 
+    c.table = new trituple[c.terms];
+    // init c with diagonal of a
+    unsigned count = 0;
+    for (unsigned i = 0; i < a.terms; ++i)
+    {
+        if (a.table[i].row == a.table[i].col)
+        {
+            c.table[count].row = count; c.table[count].col = count;
+            c.table[count].value = 1 / a.table[i].value;
+            count++;
+        }
+    }
+
+    Matrix w, R;
+    // init vector R: r=b-Ax
+    R.rows = a.rows;    R.cols = 1;
+    R.data = r;
+    // init vector w: w=Cr
+    mul(c, R, w);
+    
+    // init vector v: v=Ctw
+    SparseMatrix c_t;
+    fastTranspose(c, c_t);
+    SparseMatrix temp;
+    mul(c_t, w, temp);
+    Matrix v;
+    Spa2Nor(temp, v);
+    delete [] temp.table;
+
+    // alpha=||w||2^2
+    double alpha = 0.0;
+    for (unsigned i = 0; i < a.rows; ++i)
+        alpha += w.data[i] * w.data[i];
+    
+    // iterations
+    unsigned k = 0;
+    while (k <= maxit)
+    {
+        double norm = 0.0;
+        // compute norm of v
+        for (unsigned i = 0; i < a.rows; ++i)
+            norm += fabs(v.data[i]);
+        // judge if get to tol
+        if (norm < tol)
+            break;
+
+        // compute u: u=Av
+        Matrix u;
+        mul(a, v, u);
+
+        // compute t:t=alpha/(v,u)
+        double t = 0.0;
+        for (unsigned i = 0; i < a.rows; ++i)
+            t += v.data[i] * u.data[i];
+        t = alpha / t;
+
+        // compute x: x=x+tv
+        Matrix tv;
+        mul(t, v, tv);
+        add(x, tv, x);
+
+        // compute r: r=r-tu
+        Matrix tu;
+        mul(t, u, tu);
+        sub(R, tu, R);
+        // compute w: w=cr
+        mul(c, R, w);
+
+        // compute beta: beta=||w||2^2
+        double beta = 0.0, garma = 0.0;
+        for (unsigned i = 0; i < a.rows; ++i)
+        {
+            garma += fabs(r[i]);
+            beta += w.data[i] * w.data[i]; 
+        }
+        if (beta < tol && garma < tol)
+            break;
+
+        // compute s: s=beta/alpha
+        double s = beta / alpha;
+        // compute v: v=ctw+sv
+        mul(c_t, w, v);
+        Matrix sv;
+        mul(s, v, sv);
+        add(v, sv, v);
+
+        alpha = beta;
+        k++;
+    }
+
+    if (k > maxit)
+        cout << "The maximum number of iterations was exceeded." << endl;
+    set = x.data;
+
     return true;
 }
