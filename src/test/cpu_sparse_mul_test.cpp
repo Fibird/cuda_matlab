@@ -2,13 +2,16 @@
 #include <ctime>
 #include <unistd.h>
 #include <iostream>
-#include <iomanip>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include "sparse_matrix.h"
 
 #define MAX_ROW 10
 #define MAX_COL 10
 
 using namespace std;
+using namespace cv;
 
 int main(int argc, char **argv)
 {
@@ -27,7 +30,6 @@ int main(int argc, char **argv)
     sleep(1);
     rand(t1_b); 
 
-    cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
     cout << "Size: " << t1_a.rows << "x" << t1_a.cols << endl;
     // print sparse matrix a
@@ -68,7 +70,6 @@ int main(int argc, char **argv)
     sleep(1);
     zeros(t2_b); 
 
-    cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
     cout << "Size: " << t2_a.rows << "x" << t2_a.cols << endl;
     // print sparse matrix a
@@ -161,7 +162,6 @@ int main(int argc, char **argv)
     t3_b.table[5].row = 3;  t3_b.table[5].col = 1;
     t3_b.table[5].value = 5;
 
-    cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
     cout << "Size: " << t3_a.rows << "x" << t3_a.cols << endl;
     // print sparse matrix a
@@ -202,7 +202,6 @@ int main(int argc, char **argv)
     sleep(1);
     zeros(t4_b); 
 
-    cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
     cout << "Size: " << t4_a.rows << "x" << t4_a.cols << endl;
     // print sparse matrix a
@@ -243,7 +242,6 @@ int main(int argc, char **argv)
     sleep(1);
     rand(t5_b); 
 
-    cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
     cout << "Size: " << t5_a.rows << "x" << t5_a.cols << endl;
     // print sparse matrix a
@@ -279,12 +277,12 @@ int main(int argc, char **argv)
     test_id++;
     t6_a.rows = 9;      t6_a.cols = 12;
     t6_b.rows = 12;      t6_b.cols = 12;
+    t6_a.table = NULL;
     // init matrices
     // don't init a
     sleep(1);
     rand(t6_b); 
 
-    cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
     cout << "Size: " << t6_a.rows << "x" << t6_a.cols << endl;
     // print sparse matrix a
@@ -368,7 +366,6 @@ int main(int argc, char **argv)
     t7_b.table[3].row = 2;  t7_b.table[3].col = 1;
     t7_b.table[3].value = -1;
 
-    cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
     cout << "Size: " << t7_a.rows << "x" << t7_a.cols << endl;
     // print sparse matrix a
@@ -452,7 +449,6 @@ int main(int argc, char **argv)
     t8_b.table[3].row = 2;  t8_b.table[3].col = 1;
     t8_b.table[3].value = -1;
 
-    cout.setf(ios::fixed);
     cout << "Test Matrix A:" << endl;
     cout << "Size: " << t8_a.rows << "x" << t8_a.cols << endl;
     // print sparse matrix a
@@ -482,6 +478,30 @@ int main(int argc, char **argv)
     if (t8_c.table)
         delete [] t8_c.table;
 
- 
+    // OpenCV Test
+    unsigned w = 512, h = 512;
+    Mat t1(h, w, CV_64FC1), t2(h, w, CV_64FC1);
+    //Mat rst1(t1.size().height, t1.size().width, CV_64FC1);
+    //rectangle(t1, Point(100, 0), Point(200, 512), Scalar(255, 0, 0));
+    line(t1, Point(0, 256), Point(512, 256), Scalar(10, 0, 0));
+    rectangle(t2, Point(0, 0), Point(512, 512), Scalar(100, 100, 100), -1);
+
+    imwrite("t1.jpg", t1);
+    imwrite("t2.jpg", t2);
+
+    Matrix m_t1, m_t2, m_rst1;
+    m_t1.rows = t1.size().height;    m_t1.cols = t1.size().width;
+    m_t1.data = (double*)t1.data;
+    m_t2.rows = t2.size().height;    m_t2.cols = t2.size().width;
+    m_t2.data = (double*)t2.data;
+
+    SparseMatrix sm_t1, sm_t2, sm_rst1;
+
+    Nor2Spa(m_t1, sm_t1);
+    Nor2Spa(m_t2, sm_t2);
+    mul(sm_t1, sm_t2, sm_rst1);
+    Spa2Nor(sm_rst1, m_rst1);
+    Mat rst1(m_rst1.rows, m_rst1.cols, CV_64FC1, m_rst1.data);
+    imwrite("rst1.jpg", rst1); 
     return 0;
 }

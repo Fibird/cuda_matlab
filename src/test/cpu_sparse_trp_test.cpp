@@ -1,13 +1,15 @@
-#include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <iomanip>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include "sparse_matrix.h"
 
 #define MAX_ROW 30
 #define MAX_COL 30
 
 using namespace std;
+using namespace cv;
 
 int main(int argc, char **argv)
 {
@@ -55,5 +57,22 @@ int main(int argc, char **argv)
     if (b.table)
         delete [] b.table;
     
+    // OpenCV Test
+    Mat t1(512, 512, CV_64FC1);
+    //Mat rst1(t1.size().height, t1.size().width, CV_64FC1);
+    rectangle(t1, Point(100, 0), Point(200, 512), Scalar(255, 0, 0));
+    imwrite("t1.jpg", t1);
+    
+    Matrix m_t1, m_rst1;
+    m_t1.rows = t1.size().height;    m_t1.cols = t1.size().width;
+    m_t1.data = (double*)t1.data;
+
+    SparseMatrix sm_t1, sm_rst1;
+    Nor2Spa(m_t1, sm_t1);
+    fastTranspose(sm_t1, sm_rst1);
+    Spa2Nor(sm_rst1, m_rst1); 
+    Mat rst1(t1.size().height, t1.size().width, CV_64FC1, m_rst1.data);
+    imwrite("rst1.jpg", rst1);
+
     return 0;
 }

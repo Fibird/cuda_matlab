@@ -58,6 +58,12 @@ bool mul(const Matrix a, const double b, Matrix &c);
 // c - result matrix
 bool mul(const double b, const Matrix a, Matrix &c);
 
+// Element-wise multiplication
+// a - input matrix a
+// b - input matrix b
+// c - result matrix
+bool dot_mul(const Matrix a, const Matrix b, Matrix &c);
+
 // Get the natural logarithm ln(a) of each element
 // a - input matrix
 // b - result matrix

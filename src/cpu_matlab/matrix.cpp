@@ -101,6 +101,22 @@ bool mul(const double b, const Matrix a, Matrix &c)
     return mul(a, b, c);
 }
 
+bool dot_mul(const Matrix a, const Matrix b, Matrix &c)
+{
+    if (!check(a) && !check(b))
+        return false;
+    
+    if (a.rows != b.rows || a.cols != b.cols)
+        return false;
+
+    c.rows = a.rows;    c.cols = a.cols;
+    c.data = new double[c.rows * c.cols];
+    for (unsigned i = 0; i < a.rows * a.cols; ++i)
+        c.data[i] = a.data[i] * b.data[i]; 
+
+    return true;
+}
+
 bool log(const Matrix a, Matrix &b)
 {
     b.data = NULL;

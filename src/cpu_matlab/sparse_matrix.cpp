@@ -548,7 +548,7 @@ bool fastTranspose(const SparseMatrix a, SparseMatrix &b)
         nonzeros[a.table[i].col]++;
     
     // get the start positon of non-zero elements in every row
-    term_starts[0];
+    term_starts[0] = 0;
     for (int i = 1; i < a.cols; ++i)
         term_starts[i] = term_starts[i - 1] + nonzeros[i - 1];
         
